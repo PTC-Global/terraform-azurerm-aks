@@ -55,12 +55,12 @@ resource "null_resource" "provision" {
 
   provisioner "local-exec" {
     # install ingress controller
-    command = "helm install stable/nginx-ingress -n ${var.nginx_deployment_name} --namespace ${var.ingress_controller_namespace} --set controller.service.externalTrafficPolicy=Local --set controller.extraArgs.publish-service='${var.ingress_controller_namespace}/ingress-nginx-nginx-ingress-controller'"
+    command = "helm upgrade --install ingress-nginx stable/nginx-ingress --namespace default --set controller.service.externalTrafficPolicy=Local --set controller.extraArgs.publish-service='default/ingress-nginx-nginx-ingress-controller'"
   }
 
   # install cert-manager
   provisioner "local-exec" {
-    command = "helm install stable/${var.cert_manager_helm_package} -n ${var.cert_manager_deployment_name} --namespace ${var.ingress_controller_namespace} --set config.LEGO_EMAIL=${var.certificate_email} --set config.LEGO_URL=${var.lets_encypt_url}"
+    command = "helm upgrade --install ${var.cert_manager_deployment_name} stable/${var.cert_manager_helm_package} --namespace ${var.ingress_controller_namespace} --set config.LEGO_EMAIL=${var.certificate_email} --set config.LEGO_URL=${var.lets_encypt_url}"
   }
 
   depends_on = ["azurerm_kubernetes_cluster.aks_managed_cluster"]
